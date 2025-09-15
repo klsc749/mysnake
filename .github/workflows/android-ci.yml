@@ -2,7 +2,7 @@ name: Android CI (Debug)
 
 on:
   push:
-    branches: [ "main", "dev", "feature/**" ]
+    branches: [ "master"]
   pull_request:
   workflow_dispatch:
 
@@ -35,6 +35,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       # 可选：显示 Gradle 与 AGP 版本，便于调试日志
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
       - name: Show Gradle info
         run: ./gradlew -v
 
