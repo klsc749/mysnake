@@ -2,9 +2,8 @@ name: Android CI (Debug)
 
 on:
   push:
-    branches: [ "master"]
-  pull_request:
-  workflow_dispatch:
+    tags:
+      - "v*"   # 如 v1.0.0
 
 jobs:
   build:
