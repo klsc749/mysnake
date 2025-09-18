@@ -29,15 +29,12 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # 安装 Android SDK + 接受 license（会自动配置 ANDROID_SDK_ROOT）
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      # Gradle 缓存（含依赖、构建缓存）
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # 可选：显示 Gradle 与 AGP 版本，便于调试日志
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 

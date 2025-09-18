@@ -32,7 +32,7 @@ import kotlin.math.hypot
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { SnakeGameScreen(useDPad = true) }
+        setContent { SnakeGameScreen(useDPad = false) }
     }
 }
 
@@ -45,14 +45,12 @@ fun SnakeGameScreen(useDPad: Boolean) {
     val cell = 16f
     val cellDp = 16.dp
 
-    // 1) 可玩区域（内圈），墙体厚度 = 1 格
     val wall = 1
     val playableX = (wall .. cols - 1 - wall)
     val playableY = (wall .. rows - 1 - wall)
 
     var dir by remember { mutableStateOf(Dir.RIGHT) }
     var snake by remember {
-        // 起始位置放在内圈
         mutableStateOf(listOf(Offset(5f, 10f), Offset(4f, 10f), Offset(3f, 10f)))
     }
     var food by remember { mutableStateOf(randomFoodIn(playableX, playableY, snake)) }
@@ -69,7 +67,6 @@ fun SnakeGameScreen(useDPad: Boolean) {
         if (newDir != opposite) dir = newDir
     }
 
-    // 2) 游戏循环：把“撞墙”改成与内圈边界比较
     LaunchedEffect(alive, dir, snake) {
         while (alive) {
             delay(120)
@@ -110,7 +107,7 @@ fun SnakeGameScreen(useDPad: Boolean) {
 
     val snakeColor = MaterialTheme.colorScheme.primary
     val foodColor  = MaterialTheme.colorScheme.tertiary
-    val wallColor  = MaterialTheme.colorScheme.secondary   // 3) 墙体颜色
+    val wallColor  = MaterialTheme.colorScheme.secondary
 
     MaterialTheme {
         Column(
@@ -135,54 +132,46 @@ fun SnakeGameScreen(useDPad: Boolean) {
                     .align(Alignment.CenterHorizontally)
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                // 在 DrawScope 内，用 px 计算每格尺寸
-                val cell = size.width / cols            // ✅ px
-                // val cellY = size.height / rows       // 行高；此布局下等于 cell
-
-                // === 画墙（四边各 1 格厚） ===
-                // 顶
+                val cell = size.width / cols
+                // up wall
                 drawRect(
                     color = wallColor,
                     topLeft = Offset(0f, 0f),
                     size = Size(size.width, cell)
                 )
-                // 底
+                // down wall
                 drawRect(
                     color = wallColor,
                     topLeft = Offset(0f, size.height - cell),
                     size = Size(size.width, cell)
                 )
-                // 左
+                // left wall
                 drawRect(
                     color = wallColor,
                     topLeft = Offset(0f, 0f),
                     size = Size(cell, size.height)
                 )
-                // 右
+                // right wall
                 drawRect(
                     color = wallColor,
                     topLeft = Offset(size.width - cell, 0f),
                     size = Size(cell, size.height)
                 )
 
-                // === 蛇 ===
                 snake.forEach {
                     drawRect(
                         color = snakeColor,
-                        topLeft = Offset(it.x * cell, it.y * cell),  // ✅ 用 px
+                        topLeft = Offset(it.x * cell, it.y * cell),
                         size = Size(cell, cell)
                     )
                 }
 
-                // === 食物 ===
                 drawCircle(
                     color = foodColor,
                     radius = cell / 2f,
                     center = Offset(food.x * cell + cell / 2f, food.y * cell + cell / 2f)
                 )
 
-                // （可选）调试：给整个画布画个 1px 外框，确认居中
-                // drawRect(color = Color.Red, style = Stroke(width = 1f))
             }
 
             Spacer(Modifier.height(12.dp))
@@ -196,7 +185,7 @@ fun SnakeGameScreen(useDPad: Boolean) {
                 )
             } else {
                 TouchJoystick(
-                    onDirection = { tryChangeDir(it) },   // 触摸拖动决定方向
+                    onDirection = { tryChangeDir(it) },
                     diameter = 160.dp
                 )
             }
@@ -262,7 +251,6 @@ private fun TouchJoystick(
     val density = LocalDensity.current
     val radiusPx = with(density) { (diameter / 2).toPx() }
 
-    // 小圆点（摇杆“帽子”）相对中心的像素偏移
     var knobOffset by remember { mutableStateOf(Offset.Zero) }
 
     Box(
@@ -276,13 +264,12 @@ private fun TouchJoystick(
                     onDrag = { change, drag ->
                         knobOffset += drag
                         val len = hypot(knobOffset.x, knobOffset.y)
-                        val maxR = radiusPx * 0.7f   // 限制拖动最大半径
+                        val maxR = radiusPx * 0.7f
                         if (len > maxR) {
                             val s = maxR / len
                             knobOffset = Offset(knobOffset.x * s, knobOffset.y * s)
                         }
 
-                        // 超过阈值就判定方向
                         val threshold = radiusPx * 0.25f
                         if (len > threshold) {
                             val dir = if (abs(knobOffset.x) > abs(knobOffset.y)) {
@@ -300,7 +287,6 @@ private fun TouchJoystick(
             },
         contentAlignment = Alignment.Center
     ) {
-        // 背景十字参考（可选）
         Box(
             Modifier
                 .fillMaxSize()
@@ -308,7 +294,6 @@ private fun TouchJoystick(
                 .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape)
         )
 
-        // 摇杆小圆帽
         Box(
             Modifier
                 .offset {
