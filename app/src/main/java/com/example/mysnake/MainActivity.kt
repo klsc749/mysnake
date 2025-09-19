@@ -35,7 +35,7 @@ import kotlin.math.hypot
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { SnakeGameScreen(useDPad = false) }
+        setContent { SnakeGameScreen(useDPad = true) }
     }
 }
 
