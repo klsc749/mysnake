@@ -108,6 +108,14 @@ fun SnakeGameScreen(useDPad: Boolean) {
         }
     }
 
+    fun resetGame() {
+        dir = Dir.RIGHT
+        snake = listOf(Offset(5f, 10f), Offset(4f, 10f), Offset(3f, 10f))
+        food = randomFoodIn(playableX, playableY, snake)
+        score = 0
+        alive = true
+    }
+
     val snakeColor = MaterialTheme.colorScheme.primary
     val foodColor  = MaterialTheme.colorScheme.tertiary
     val wallColor  = MaterialTheme.colorScheme.secondary
@@ -194,17 +202,16 @@ fun SnakeGameScreen(useDPad: Boolean) {
             }
 
             if (!alive) {
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "Game Over. Hit Start to play again.",
-                    color = MaterialTheme.colorScheme.error
-                )
-                LaunchedEffect(Unit) {
-                    dir = Dir.RIGHT
-                    snake = listOf(Offset(5f, 10f), Offset(4f, 10f), Offset(3f, 10f))
-                    food = randomFoodIn(playableX, playableY, snake)
-                    alive = true
-                    score = 0
+                Spacer(Modifier.height(12.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "Game Over",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Button(onClick = { resetGame() }) { Text("Start Again") }
                 }
             }
         }
