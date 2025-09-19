@@ -23,6 +23,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.abs
@@ -128,7 +131,7 @@ fun SnakeGameScreen(useDPad: Boolean) {
 
             Canvas(
                 modifier = Modifier
-                    .size(width = cellDp * cols, height = cellDp * rows)  // ✅ dp
+                    .size(width = cellDp * cols, height = cellDp * rows)
                     .align(Alignment.CenterHorizontally)
                     .background(MaterialTheme.colorScheme.surface)
             ) {
@@ -173,7 +176,7 @@ fun SnakeGameScreen(useDPad: Boolean) {
                 )
 
             }
-
+//
             Spacer(Modifier.height(12.dp))
 
             if (useDPad) {
@@ -206,6 +209,18 @@ fun SnakeGameScreen(useDPad: Boolean) {
             }
         }
     }
+}
+
+class UseDPadProvider : PreviewParameterProvider<Boolean> {
+    override val values = sequenceOf(true, false)
+}
+
+@Preview(showBackground = true, name = "Snake (DPad / Joystick)")
+@Composable
+fun PreviewSnakeGame(
+    @PreviewParameter(UseDPadProvider::class) useDPad: Boolean
+) {
+    SnakeGameScreen(useDPad = useDPad)
 }
 
 @Composable
